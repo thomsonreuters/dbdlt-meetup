@@ -294,6 +294,12 @@ channel.sendTransaction({ proposalResponses: responses, proposal: proposal });
 
 ---
 
+### Code
+
+[https://github.com/thomsonreuters/dbdlt-meetup/](https://github.com/thomsonreuters/dbdlt-meetup/)
+
+---
+
 ### Other Resources
 
 - [Source for this Demo](https://www.github.com/thomsonreuters/...)
