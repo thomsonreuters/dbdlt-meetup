@@ -1,0 +1,35 @@
+<% include header.html %>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
+        <a class="navbar-brand" href="#">History for: <%= id %></a>
+        <button class="btn btn-outline-success my-2 my-sm-0" type="button" onclick="history.go(-1);">Return</button>
+    </nav>
+    
+    <br />
+
+    <div id="jsGrid"></div>
+    <script>
+
+    var data = [
+      <% data.forEach(d => { %>
+        { TXID: "<%= d.txid %>", Customer: "<%= d.value.Customer %>", ShipFrom: "<%= d.value.ShipFrom %>", ShipTo: "<%= d.value.ShipTo %>" },
+      <% }); %>
+    ]
+
+    $("#jsGrid").jsGrid({
+      height: "70%",
+      width: "100%",
+      editing: false,
+      autoload: true,
+      paging: true,
+      data: data,
+     fields: [
+         { name: "TXID", type: "text", width: 225 },
+         { name: "Customer", type: "text", width: 75 },
+         { name: "ShipFrom", type: "text", width: 75 },
+         { name: "ShipTo", type: "text", width: 75 },
+     ]
+    });
+    </script>
+
+<% include footer.html %>

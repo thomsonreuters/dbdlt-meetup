@@ -1,0 +1,192 @@
+<% include header.html %>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">State view for: <%= channel %></a>
+
+    </nav>
+
+    <br />
+
+    <div id="jsGrid"></div>
+
+    <div id="detailsDialog">
+        <form id="detailsForm">
+            <div class="details-form-field">
+              <label for="key">Key</label>
+              <input id="key" name="key" type="text" readonly />
+            </div>
+            <div class="details-form-field">
+                <label for="customer">Customer</label>
+                <input id="customer" name="customer" type="text" />
+              </div>
+              <div class="details-form-field">
+                  <label for="shipfrom">ShipFrom</label>
+                  <input id="shipfrom" name="shipfrom" type="text" />
+                </div>
+                <div class="details-form-field">
+                    <label for="shipto">ShipTo</label>
+                    <input id="shipto" name="shipto" type="text" />
+                  </div>
+            <div class="details-form-field">
+                <button type="submit" id="save">Save</button>
+            </div>
+        </form>
+    </div>
+    <script>
+
+      function guid() {
+        function s4() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+      };
+
+(function() {
+
+var db = {
+
+    loadData: function(filter) { return this.rows; },
+
+    insertItem: function(row) { 
+        $.post( "/add/" + row.Key , { Customer: row.Customer, ShipFrom: row.ShipFrom, ShipTo: row.ShipTo } )
+            .done(data => alert('saved'));
+     },
+
+    updateItem: function(row) {  
+        $.post( "/update/" + row.Key , { Customer: row.Customer, ShipFrom: row.ShipFrom, ShipTo: row.ShipTo } )
+            .done(data => alert('saved'));
+    },
+
+    deleteItem: function(row) { 
+        $.get( "/delete/" + row.Key)
+            .done(data => alert('deleted'));
+    }
+
+};
+
+window.db = db;
+
+db.rows = [
+    <% data.forEach(d => { %>
+    {
+        "Key": "<%= d.key %>",
+        "Customer": "<%= d.value.Customer %>",
+        "ShipFrom": "<%= d.value.ShipFrom %>",
+        "ShipTo": "<%= d.value.ShipTo %>",
+    },
+    <% }); %>
+];
+
+}());
+
+$(function() {
+ 
+ $("#jsGrid").jsGrid({
+     height: "70%",
+     width: "100%",
+     editing: true,
+     autoload: true,
+     paging: true,
+     deleteConfirm: function(item) {
+         return "Are you sure?";
+     },
+     rowClick: function(args) {
+         showDetailsDialog("Edit", args.item);
+     },
+     controller: db,
+     fields: [
+         { name: "Key", type: "text", width: 225 },
+         { name: "Customer", type: "text", width: 75 },
+         { name: "ShipFrom", type: "text", width: 150 },
+         { name: "ShipTo", type: "text", width: 150 },
+         {
+             type: "control",
+             deleteButton: false,
+             editButton: false,
+             itemTemplate: function(value, item) {
+                    var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
+
+                    var $customEditButton = $("<button>").attr("type", "button")
+                        .attr('class', 'btn btn-sm btn-info').text("History")
+                      .click(function(e) {
+                        window.location = '/history/' + item.Key;
+                        e.stopPropagation();
+                      });
+                    return $("<div>").append($customEditButton);
+             }
+         },
+         {
+             type: "control",
+             modeSwitchButton: false,
+             editButton: false,
+             headerTemplate: function() {
+                 return $("<button>").attr("type", "button")
+                    .attr('class', 'btn btn-sm btn-success').text("Add")
+                         .on("click", function () {
+                             showDetailsDialog("Add", {});
+                         });
+             }
+         }
+     ]
+ });
+
+ $("#detailsDialog").dialog({
+     autoOpen: false,
+     width: 400,
+     close: function() {
+         $("#detailsForm").validate().resetForm();
+         $("#detailsForm").find(".error").removeClass("error");
+     }
+ });
+
+ $("#detailsForm").validate({
+     rules: {
+         Customer: "required"
+     },
+     messages: {
+         Customer: "Please enter a customer"
+     },
+     submitHandler: function() {
+         formSubmitHandler();
+     }
+ });
+
+ var formSubmitHandler = $.noop;
+
+ var showDetailsDialog = function(dialogType, row) {
+    if (dialogType === 'Add') 
+      $("#key").val(guid());
+    else
+      $("#key").val(row.Key);
+
+    $("#customer").val(row.Customer);
+    $("#shipfrom").val(row.ShipFrom);
+    $("#shipto").val(row.ShipTo);
+
+     formSubmitHandler = function() {
+         saveRow(row, dialogType === "Add");
+     };
+
+     $("#detailsDialog").dialog("option", "title", "Edit...")
+             .dialog("open");
+ };
+
+ var saveRow = function(row, isNew) {
+     $.extend(row, {
+         Key: $("#key").val(),
+         Customer: $("#customer").val(),
+         ShipFrom: $("#shipfrom").val(),
+         ShipTo: $("#shipto").val()
+     });
+
+     $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", row);
+
+     $("#detailsDialog").dialog("close");
+ };
+
+});
+    </script>
+
+<% include footer.html %>

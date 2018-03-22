@@ -1,0 +1,78 @@
+---
+Profiles:
+
+    NetworkGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Addresses:
+                - orderer.authority.gov:7050
+            Organizations:
+                - *AuthorityOrdererMSP
+        Consortiums:
+            TaxConsortium:
+                Organizations:
+                    - *AuthorityMSP
+                    - *Entity1MSP
+                    - *Entity2MSP
+        
+    Entity1:
+        Consortium: TaxConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *AuthorityMSP
+                - *Entity1MSP
+    Entity2:
+        Consortium: TaxConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *AuthorityMSP
+                - *Entity2MSP
+    Shared:
+        Consortium: TaxConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *AuthorityMSP
+                - *Entity1MSP
+                - *Entity2MSP
+
+Organizations:
+    - &AuthorityOrdererMSP
+        Name: AuthorityOrdererMSP
+        ID: AuthorityOrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/authority.gov/msp
+    - &AuthorityMSP
+        Name: AuthorityMSP
+        ID: AuthorityMSP
+        MSPDir: crypto-config/peerOrganizations/authority.gov/msp
+        AnchorPeers:
+            - Host: peer0.authority.gov
+              Port: 7051
+    - &Entity1MSP
+        Name: Entity1MSP
+        ID: Entity1MSP
+        MSPDir: crypto-config/peerOrganizations/entity1.com/msp
+        AnchorPeers:
+            - Host: peer0.entity1.com
+              Port: 8051
+    - &Entity2MSP
+        Name: Entity2MSP
+        ID: Entity2MSP
+        MSPDir: crypto-config/peerOrganizations/entity2.com/msp
+        AnchorPeers:
+            - Host: peer0.entity2.com
+              Port: 9051
+
+Orderer: &OrdererDefaults
+    OrdererType: solo
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+
+Application: &ApplicationDefaults
+    Organizations:

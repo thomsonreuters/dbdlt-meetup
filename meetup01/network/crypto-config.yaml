@@ -1,0 +1,25 @@
+
+OrdererOrgs:
+  - Name: AuthorityOrdererMSP
+    Domain: authority.gov
+    Specs:
+      - Hostname: orderer
+PeerOrgs:
+  - Name: AuthorityMSP
+    Domain: authority.gov
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Entity1MSP
+    Domain: entity1.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Entity2MSP
+    Domain: entity2.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
