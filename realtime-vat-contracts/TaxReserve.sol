@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 import "./Ownable.sol";
 
 contract TaxReserve is Ownable {
-    event Remitted(string indexed _ref, uint256[] _ids);
+    event Remitted(uint256 indexed _ref, uint256[] _ids);
     event Refunded(uint256 indexed _id, address indexed _from, address indexed _to, uint256 _principle, uint256 _tax);
 
     struct Transaction {
@@ -30,7 +30,7 @@ contract TaxReserve is Ownable {
         
         example: "asdf", ["0xca35b7d915458ef540ade6068dfe2f44e8fa733c"], ["1000000000000000000"], ["1000000000000000000"]
     */
-    function remit(string ref, address[] _to, uint256[] _principle, uint256[] _tax) external payable {
+    function remit(uint256 ref, address[] _to, uint256[] _principle, uint256[] _tax) external payable {
         require(msg.value > 0 && _to.length > 0);
         require(_to.length == _principle.length && _to.length == _tax.length);
         
@@ -106,7 +106,7 @@ contract TaxReserve is Ownable {
     /*
         Transfers given amount to sepcified address.
     */
-    function withdraw(address _to, uint256 _amount) external onlyOwner {
+    function withdrawal(address _to, uint256 _amount) external onlyOwner {
         _to.transfer(_amount);
     }
 
