@@ -1,0 +1,1 @@
+docker exec -it ethereum-standalone_node geth attach

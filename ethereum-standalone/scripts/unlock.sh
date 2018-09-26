@@ -1,0 +1,1 @@
+docker exec -it ethereum-standalone_node geth --exec "personal.unlockAccount('0xd70f7ff4e1708ec715a86803a2ab35344d9cc925', 'password', 0);" attach

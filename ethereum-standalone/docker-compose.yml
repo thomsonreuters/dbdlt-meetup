@@ -1,0 +1,10 @@
+version: "3"
+services:
+  node:
+    container_name: ethereum-standalone_node
+    build: .
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "30303:30303"
+      - "30303:30303/udp"
